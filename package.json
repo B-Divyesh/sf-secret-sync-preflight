@@ -1,0 +1,22 @@
+{
+  "name": "secret-sync-preflight-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build:site": "vite build",
+    "build:cli": "cargo build --release",
+    "build": "npm run build:cli && npm run build:site",
+    "test:site": "tsc --noEmit && npm run build:site && playwright test",
+    "test": "cargo test && npm run test:site"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@fontsource/ibm-plex-mono": "5.2.6",
+    "@fontsource/inter": "5.2.6",
+    "@playwright/test": "1.58.2",
+    "typescript": "5.9.2",
+    "vite": "7.1.3"
+  }
+}
