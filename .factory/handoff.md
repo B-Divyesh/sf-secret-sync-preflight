@@ -30,6 +30,7 @@ cargo package
 
 - `npm test`: passed — 8 Rust/integration tests, 1 compiling doctest, and 9 passing Playwright assertions across desktop Chromium and 390×844 mobile Chromium (1 intentionally skipped desktop-only duplicate). The browser suite includes axe serious/critical checks, no-console-error checks, empty/error/offline behavior, keyboard order, seeded results, legal pages, and mobile overflow.
 - `npm run build`: passed — release CLI at `target/release/sspf`; static deploy at `dist/site/` with `index.html` at its root.
+- Clean-clone verification: passed with `npm ci && npm run build`; both expected artifacts were present.
 - `cargo clippy --all-targets -- -D warnings`: passed.
 - `cargo package`: passed; package created at `target/package/secret-sync-preflight-0.1.0.crate` (about 88 KB compressed). The factory may publish it; this worker did not.
 - `npm audit`: 0 vulnerabilities.
