@@ -1,0 +1,11 @@
+{
+  "slug": "secret-sync-preflight",
+  "title": "Secret Sync Preflight",
+  "territory": "devtools-data",
+  "user": "A DevOps developer moving configuration through IaC, a secret manager, CI, and hosting providers who needs to detect missing, excess, stale, or provider-limited secrets before deployment.",
+  "smallest_useful_product": "CLI reads a key-only desired manifest and provider exports, highlights missing, extra, renamed keys, detects destination limits and dangerous delete plans, and emits CI annotations without reading values.",
+  "success_measure": "In a seeded multi-environment fixture, it catches all missing, extra, renamed, and over-limit key states without printing a secret value; a team blocks one unsafe deployment via CI.",
+  "artifact_class": "cli",
+  "monetization": "free",
+  "constraints": "Metadata-only by default; never log values; provider tokens must be least-privilege/read-only; treat key names as potentially sensitive and support local reports."
+}
