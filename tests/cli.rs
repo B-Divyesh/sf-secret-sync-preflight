@@ -118,3 +118,47 @@ fn report_file_is_written_for_local_ci_artifacts() {
     let report: Value = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
     assert_eq!(report["schema_version"], 1);
 }
+
+#[test]
+fn report_cannot_overwrite_an_input_export() {
+    Command::cargo_bin("sspf")
+        .unwrap()
+        .args([
+            "check",
+            "--manifest",
+            "examples/preflight.toml",
+            "--report",
+            "examples/staging-ci.keys",
+        ])
+        .assert()
+        .code(2)
+        .stderr(predicate::str::contains("must not overwrite"));
+}
+
+#[test]
+fn warning_policy_passes_unless_strict() {
+    let directory = tempfile::tempdir().unwrap();
+    let export = directory.path().join("provider.keys");
+    let manifest = directory.path().join("preflight.toml");
+    fs::write(&export, "EXPECTED\nSTALE\n").unwrap();
+    fs::write(
+        &manifest,
+        "version=1\n[[environments]]\nname='prod'\ndesired=['EXPECTED']\n[[environments.destinations]]\nname='ci'\nexport='provider.keys'\ndelete_policy='warn'\n",
+    )
+    .unwrap();
+    Command::cargo_bin("sspf")
+        .unwrap()
+        .args(["check", "--manifest", manifest.to_str().unwrap()])
+        .assert()
+        .success();
+    Command::cargo_bin("sspf")
+        .unwrap()
+        .args([
+            "check",
+            "--manifest",
+            manifest.to_str().unwrap(),
+            "--strict-extra",
+        ])
+        .assert()
+        .code(1);
+}

@@ -59,10 +59,30 @@ fn execute(cli: Cli) -> Result<i32, String> {
             report,
             strict_extra,
         } => {
-            if report.as_ref().is_some_and(|path| path == &manifest) {
-                return Err("report path must not overwrite the manifest".to_owned());
-            }
             let manifest_data = load_manifest(&manifest).map_err(|e| e.to_string())?;
+            if let Some(report_path) = &report {
+                let mut inputs = vec![manifest.clone()];
+                let base = manifest
+                    .parent()
+                    .unwrap_or_else(|| std::path::Path::new("."));
+                for environment in &manifest_data.environments {
+                    for destination in &environment.destinations {
+                        inputs.push(if destination.export.is_absolute() {
+                            destination.export.clone()
+                        } else {
+                            base.join(&destination.export)
+                        });
+                    }
+                }
+                if inputs
+                    .iter()
+                    .any(|input| same_existing_file(report_path, input))
+                {
+                    return Err(
+                        "report path must not overwrite the manifest or a key export".to_owned(),
+                    );
+                }
+            }
             let result = run(&manifest_data, &manifest, strict_extra).map_err(|e| e.to_string())?;
             let json = serde_json::to_string_pretty(&result).map_err(|e| e.to_string())?;
             if let Some(path) = report {
@@ -80,6 +100,13 @@ fn execute(cli: Cli) -> Result<i32, String> {
                 1
             })
         }
+    }
+}
+
+fn same_existing_file(left: &std::path::Path, right: &std::path::Path) -> bool {
+    match (std::fs::canonicalize(left), std::fs::canonicalize(right)) {
+        (Ok(left), Ok(right)) => left == right,
+        _ => left == right,
     }
 }
 

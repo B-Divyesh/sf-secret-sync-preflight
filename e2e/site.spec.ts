@@ -46,6 +46,21 @@ test("demo supports clean, empty, error, and offline states", async ({ page, con
   await page.getByRole("button", { name: "Run preflight" }).click();
 });
 
+test("primary demo path is keyboard operable", async ({ page }) => {
+  await page.goto("/#demo");
+  await page.locator("#desired").focus();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#current")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#limit")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#policy")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Run preflight" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { name: "Unsafe to deploy" })).toBeVisible();
+});
+
 test("mobile layout has no horizontal overflow and legal pages are sound", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "mobile-only layout assertion");
   await page.goto("/");

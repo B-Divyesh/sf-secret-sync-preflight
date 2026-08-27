@@ -374,7 +374,7 @@ fn likely_renames(missing: &[String], extra: &[String]) -> Vec<Rename> {
     for (missing_index, wanted) in missing.iter().enumerate() {
         for (extra_index, current) in extra.iter().enumerate() {
             let distance = levenshtein(&wanted.to_ascii_lowercase(), &current.to_ascii_lowercase());
-            if distance > 0 && distance <= 2 {
+            if wanted.len().max(current.len()) >= 5 && distance > 0 && distance <= 2 {
                 candidates.push((distance, missing_index, extra_index));
             }
         }
