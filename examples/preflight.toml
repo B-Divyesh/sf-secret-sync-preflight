@@ -1,0 +1,21 @@
+version = 1
+
+[[environments]]
+name = "staging"
+desired = ["API_URL", "DATABASE_URL", "SESSION_KEY"]
+
+[[environments.destinations]]
+name = "ci"
+export = "staging-ci.keys"
+limit = 10
+delete_policy = "warn"
+
+[[environments]]
+name = "production"
+desired = ["API_URL", "DATABASE_URL", "SESSION_KEY"]
+
+[[environments.destinations]]
+name = "hosting"
+export = "production-hosting.keys"
+limit = 3
+delete_policy = "block"

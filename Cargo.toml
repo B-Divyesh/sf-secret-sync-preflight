@@ -1,0 +1,27 @@
+[package]
+name = "secret-sync-preflight"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+description = "Read-only secret key parity checks across deployment destinations"
+license = "MIT"
+repository = "https://github.com/B-Divyesh/sf-secret-sync-preflight"
+readme = "README.md"
+keywords = ["secrets", "devops", "ci", "preflight"]
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "sspf"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+[dev-dependencies]
+assert_cmd = "2.0"
+predicates = "3.1"
+tempfile = "3.12"
+

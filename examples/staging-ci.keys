@@ -1,0 +1,4 @@
+# One key name per line. Never include values.
+API_URL
+DATABASE_URL
+SESSION_KEY
