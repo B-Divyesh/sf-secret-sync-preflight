@@ -1,23 +1,31 @@
 # Secret Sync Preflight
 
-`sspf` is a read-only parity check for secret **key names**. It compares a desired manifest with key-only exports from CI and hosting destinations, catches missing, extra, likely-renamed, and over-limit states, and blocks dangerous delete plans before deployment. It never stores, fetches, or prints secret values.
+`sspf` checks expected secret key names against destination key exports before deployment. It is for DevOps teams moving configuration through CI and hosting services.
 
-Built for DevOps teams whose configuration crosses IaC, a secret manager, CI, and one or more hosting providers.
+It finds missing, extra, renamed, and over-limit keys. It rejects secret values without printing them. See [the claim ledger](.factory/claims.json) for runnable proof.
 
 ## Install
 
-Build the single binary from source with Rust 1.85 or newer:
+Rust 1.85 or newer is required.
 
 ```sh
 cargo install --path .
 sspf --version
 ```
 
-The factory publishes release binaries separately. This worker does not publish packages.
+Prebuilt downloads are not available yet.
 
-## Usage
+## Try the bundled demo
 
-Create `preflight.toml`:
+```sh
+sspf demo
+```
+
+The command writes key-name-only sample files to a new temporary directory, prints that directory, and runs the real check. It intentionally returns `1` because the sample contains drift.
+
+Open [the browser sample](https://secret-sync-preflight.sociobot.in/?demo=1). It uses an isolated page-memory sample. Use **Reset demo** to restore it, or **Start for real** to leave it.
+
+## Use in CI
 
 ```toml
 version = 1
@@ -33,91 +41,35 @@ limit = 100
 delete_policy = "block"
 ```
 
-Create the provider export as **one key name per line**. Blank lines and lines starting with `#` are ignored:
-
-```text
-API_URL
-DATABASE_URL
-SESSION_KEY
-```
-
-Run the preflight:
+Create an export with one key name per line. Blank lines and `#` comments are allowed.
 
 ```sh
 sspf check --manifest preflight.toml
-```
-
-Useful output modes:
-
-```sh
-# Stable machine-readable result
 sspf check --manifest preflight.toml --format json
-
-# GitHub Actions workflow annotations
 sspf check --manifest preflight.toml --format github
-
-# Keep the detailed report on the local runner
 sspf check --manifest preflight.toml --format json --report preflight-report.json
-
-# Treat otherwise safe extras as deployment-blocking drift
-sspf check --manifest preflight.toml --strict-extra
 ```
 
-`delete_policy` controls how extra destination keys are classified:
+`delete_policy` controls extra keys: `block` fails, `warn` reports, and `allow` reports. `--strict-extra` makes extras fail in every policy.
 
-- `block`: an extra key is a dangerous deletion plan and fails the check.
-- `warn`: an extra key is reported but only fails with `--strict-extra`.
-- `allow`: an extra key is informational unless `--strict-extra` is set.
+Exit code `0` means pass. Exit code `1` means drift. Exit code `2` means invalid input.
 
-Exit codes are stable: `0` means safe to deploy, `1` means drift or an unsafe plan blocks deployment, and `2` means the manifest/export could not be read or validated. Likely renames are suggestions only; `sspf` never mutates a provider.
+## Privacy and scope
 
-### GitHub Actions
+The CLI reads local key-name files. It has no telemetry or provider integration. It does not create, update, or delete provider secrets. Keep local reports restricted because key names can be sensitive.
 
-```yaml
-- name: Secret parity preflight
-  run: sspf check --manifest preflight.toml --format github --report preflight-report.json
-```
+Input must contain one key name per line. A line such as `KEY=value`, JSON, or a whitespace-delimited record is rejected. Valid key characters are ASCII letters, digits, `_`, `-`, `.`, `/`, and `:`.
 
-The export files should be produced by a least-privilege, read-only metadata command and kept on the runner. Do not put values in an export: `sspf` rejects dotenv assignments, JSON, and whitespace-delimited records to prevent accidental value handling.
-
-## Manifest reference
-
-- `version`: must be `1`.
-- `environments[].name`: unique display name.
-- `environments[].desired`: unique key names; empty arrays are valid.
-- `environments[].destinations[].name`: unique within its environment.
-- `export`: path to a key-only text file, resolved relative to the manifest.
-- `limit`: optional positive provider key limit. Desired or current count at/over the boundary is reported.
-- `delete_policy`: `block` (default), `warn`, or `allow`.
-- `ignore`: optional key names excluded from both desired and current comparisons.
-
-Keys may contain ASCII letters, digits, `_`, `-`, `.`, `/`, and `:`. Output is local unless the caller explicitly sends it elsewhere. Because key names can still be sensitive, reports should be treated as build artifacts with restricted access.
-
-## Development
+## Develop and verify
 
 ```sh
 npm install
 npm test
-npm run build       # Rust release binary + static site at dist/site/
-npm run build:site  # static site only at dist/site/
-cargo package       # verify the publishable Rust crate
+npm run build
+cargo package
 ```
 
-The static documentation site includes an in-browser demo. It does not use analytics, network requests, cookies, or storage; demo input stays in the tab and is discarded on refresh.
-
-## Repository map
-
-- `src/` — Rust CLI and comparison engine.
-- `tests/` — CLI integration and seeded fixture coverage.
-- `site/` — dependency-light Vite documentation and local-only demo.
-- `examples/` — safe key-only example manifest and exports.
-- `.factory/` — opportunity brief, visual system, and build handoff.
-
-## Security and scope
-
-This tool is metadata-only. It does not connect to providers, accept provider tokens, rotate values, replace a secret manager, or automatically delete anything. If an export contains an assignment such as `KEY=value`, parsing stops before the value is retained or echoed, and the error identifies only the line number.
-
-Report security issues through the repository’s private security reporting channel. Do not include secret values or sensitive key names in a public issue.
+The static site builds to `dist/site/`. Deploy it as a static site; `staticwebapp.config.json` supplies headers and the designed 404 response.
 
 ## License
 

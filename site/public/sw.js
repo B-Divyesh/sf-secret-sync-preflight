@@ -1,5 +1,5 @@
-const CACHE = "sspf-shell-v1";
-const SHELL = ["/", "/privacy/", "/terms/", "/favicon.svg", "/parity-lattice.webp"];
+const CACHE = "sspf-shell-v2";
+const SHELL = ["/", "/demo/", "/privacy/", "/terms/", "/favicon.svg", "/apple-touch-icon.png", "/parity-lattice.webp"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));

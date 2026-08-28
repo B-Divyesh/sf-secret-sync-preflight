@@ -31,6 +31,8 @@ enum Command {
         #[arg(long)]
         strict_extra: bool,
     },
+    /// Run the bundled sample in a new temporary directory
+    Demo,
 }
 
 #[derive(Clone, Copy, ValueEnum)]
@@ -100,7 +102,38 @@ fn execute(cli: Cli) -> Result<i32, String> {
                 1
             })
         }
+        Command::Demo => run_demo(),
     }
+}
+
+/// Materialize the safe, key-name-only fixture so a first run never needs a
+/// repository, credentials, or a provider connection. The directory is left
+/// behind deliberately: the user can inspect the exact files that were read.
+fn run_demo() -> Result<i32, String> {
+    let nonce = format!(
+        "sspf-demo-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(|e| e.to_string())?
+            .as_nanos()
+    );
+    let directory = std::env::temp_dir().join(nonce);
+    std::fs::create_dir_all(&directory)
+        .map_err(|e| format!("cannot create demo directory {}: {e}", directory.display()))?;
+    let manifest = directory.join("preflight.toml");
+    std::fs::write(&manifest, include_str!("../examples/preflight.toml"))
+        .map_err(|e| format!("cannot write demo manifest: {e}"))?;
+    std::fs::write(directory.join("staging-ci.keys"), include_str!("../examples/staging-ci.keys"))
+        .map_err(|e| format!("cannot write demo export: {e}"))?;
+    std::fs::write(directory.join("production-hosting.keys"), include_str!("../examples/production-hosting.keys"))
+        .map_err(|e| format!("cannot write demo export: {e}"))?;
+    let manifest_data = load_manifest(&manifest).map_err(|e| e.to_string())?;
+    let report = run(&manifest_data, &manifest, false).map_err(|e| e.to_string())?;
+    println!("Demo files: {}", directory.display());
+    println!("Sample data contains key names only. No provider login or network is used.");
+    print_terminal(&report);
+    Ok(if report.status == ReportStatus::Pass { 0 } else { 1 })
 }
 
 fn same_existing_file(left: &std::path::Path, right: &std::path::Path) -> bool {

@@ -9,6 +9,7 @@
     "build:cli": "cargo build --release",
     "build": "npm run build:cli && npm run build:site",
     "test:site": "tsc --noEmit && npm run build:site && playwright test",
+    "test:claims": "tsc --noEmit && playwright test",
     "test": "cargo test && npm run test:site"
   },
   "devDependencies": {

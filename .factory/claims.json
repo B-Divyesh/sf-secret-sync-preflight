@@ -1,0 +1,51 @@
+[
+  {
+    "id": "demo-command",
+    "claim": "Run a bundled sample with `sspf demo`.",
+    "where": "landing demo recording, README",
+    "test": "cargo test --test claims claim_demo_command_uses_bundled_key_only_files",
+    "sandbox": "fresh temporary directory; invoke the installed test binary with the demo subcommand"
+  },
+  {
+    "id": "drift-report",
+    "claim": "Find missing, extra, renamed, and over-limit keys.",
+    "where": "landing page, README",
+    "test": "cargo test --test claims claim_check_finds_the_advertised_drift_states",
+    "sandbox": "bundled key-name-only fixture; parse JSON report"
+  },
+  {
+    "id": "no-secret-values",
+    "claim": "Reject secret values without printing them.",
+    "where": "landing page, README",
+    "test": "cargo test --test claims claim_values_are_rejected_without_echoing_them",
+    "sandbox": "temporary export containing a unique assignment sentinel"
+  },
+  {
+    "id": "ci-exit-codes",
+    "claim": "Use exit code 0 for pass, 1 for drift, and 2 for invalid input.",
+    "where": "README",
+    "test": "cargo test --test claims claim_exit_codes_describe_pass_drift_and_input_error",
+    "sandbox": "temporary clean fixture, bundled drift fixture, and missing manifest"
+  },
+  {
+    "id": "report-formats",
+    "claim": "Print terminal, JSON, or GitHub reports and write a report only when requested.",
+    "where": "README",
+    "test": "cargo test --test claims claim_json_github_and_local_report_are_observable",
+    "sandbox": "bundled fixture and an explicit temporary report path"
+  },
+  {
+    "id": "demo-browser-isolation",
+    "claim": "Browser demo sample data is resettable and is not saved to browser storage.",
+    "where": "demo banner, README",
+    "test": "npm run test:claims -- --grep @claim:demo-browser-isolation",
+    "sandbox": "fresh browser context at /demo; edit, reset, inspect local/session storage and reload"
+  },
+  {
+    "id": "demo-browser-network",
+    "claim": "The browser demo makes no requests beyond this site and works after its first visit offline.",
+    "where": "landing facts, demo banner, README",
+    "test": "npm run test:claims -- --grep @claim:demo-browser-network",
+    "sandbox": "fresh browser context; record requests, then set offline after initial /demo load"
+  }
+]

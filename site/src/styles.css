@@ -52,6 +52,7 @@ h1 { max-width: 670px; margin: 0; font-size: clamp(44px, 6vw, 76px); line-height
 h1 span { color: var(--mist); font-weight: 400; }
 .lede { max-width: 620px; margin: 28px 0 0; color: var(--mist); font-size: 18px; line-height: 1.65; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.action-note { align-self: center; max-width: 210px; color: var(--mist); font-size: 13px; line-height: 1.35; }
 .button { min-height: 48px; padding: 0 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 2px; font: 600 14px/1 var(--mono); text-decoration: none; transition: transform 180ms ease, background-color 180ms ease, color 180ms ease; }
 .button:hover { transform: translateY(-2px); }
 .button:active { transform: translateY(0); }
@@ -83,6 +84,13 @@ h2 { margin: 0; font-size: clamp(36px, 5vw, 56px); line-height: 1.05; letter-spa
 .steps p { max-width: 580px; margin: 0; color: var(--mist); }
 
 .demo-section { width: min(100% - 40px, 1200px); }
+.demo-link { margin-top: 34px; }
+.demo-route { padding-top: 56px; }
+.demo-banner { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; margin-bottom: 48px; padding: 14px 16px; border: 1px solid #3a6653; color: var(--paper); background: #10251e; font: 500 13px/1.4 var(--mono); }
+.demo-banner strong { color: var(--signal); }
+.demo-banner span { color: var(--mist); flex: 1 1 240px; }
+.demo-banner button, .demo-banner a { min-height: 44px; padding: 0 12px; display: inline-flex; align-items: center; border: 1px solid #4d7063; color: var(--paper); background: transparent; font: 600 12px/1 var(--mono); text-decoration: none; }
+.demo-banner button:hover, .demo-banner a:hover { color: var(--signal); border-color: var(--signal); }
 .demo-intro { position: relative; }
 .connection { position: absolute; left: calc(100% + 30px); bottom: 8px; min-width: max-content; color: var(--mist); font: 500 11px/1 var(--mono); text-transform: uppercase; }
 .connection span { display: inline-block; width: 7px; height: 7px; margin-right: 8px; background: var(--signal); }
@@ -161,11 +169,14 @@ footer p { font-size: 13px; }
   .site-header, footer, .hero, .section { width: min(100% - 32px, 1200px); }
   .site-header { height: 68px; }
   .site-header nav { gap: 8px; }
-  .site-header nav a:not(.nav-install) { display: none; }
+  .site-header nav { gap: 4px; }
+  .site-header nav a { padding-inline: 6px; font-size: 11px; }
+  .site-header nav a[href="#how"], .site-header nav a[href="/#how"] { display: none; }
   .hero { min-height: auto; padding: 64px 0 52px; }
   h1 { font-size: clamp(43px, 13vw, 60px); }
   .lede { font-size: 17px; }
   .hero-actions { display: grid; }
+  .action-note { max-width: none; }
   .hero-visual { width: 132%; margin: -12px -30% -40px -2%; }
   .signal-strip { justify-content: flex-start; padding-inline: 16px; }
   .section { padding: 82px 0; }
@@ -177,6 +188,8 @@ footer p { font-size: 13px; }
   .demo-intro { width: calc(100% - 32px); margin: auto; }
   .demo-grid { border-inline: 0; }
   .input-panel, .result-panel { padding: 28px 16px; }
+  .demo-route { padding-top: 32px; }
+  .demo-banner { margin-inline: 16px; margin-bottom: 34px; gap: 10px; }
   .settings-row { grid-template-columns: 1fr; }
   .metric-row div + div { padding-left: 12px; }
   .terminal { box-shadow: 7px 7px 0 #12251f; }

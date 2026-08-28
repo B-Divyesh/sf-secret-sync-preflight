@@ -4,10 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#07110f" />
-    <meta name="description" content="A read-only CLI that catches secret key drift, provider limits, and dangerous deletion plans before deployment." />
-    <title>Secret Sync Preflight — catch secret drift before deploy</title>
+    <meta name="description" content="A CLI for DevOps teams to find secret key drift before deployment." />
+    <link rel="canonical" href="https://secret-sync-preflight.sociobot.in/" />
+    <meta property="og:title" content="Secret Sync Preflight — check secret key drift" />
+    <meta property="og:description" content="A CLI for DevOps teams to find secret key drift before deployment." />
+    <meta property="og:image" content="https://secret-sync-preflight.sociobot.in/social-card.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Secret Sync Preflight — check secret key drift" />
+    <meta name="twitter:description" content="A CLI for DevOps teams to find secret key drift before deployment." />
+    <meta name="twitter:image" content="https://secret-sync-preflight.sociobot.in/social-card.svg" />
+    <title>Secret Sync Preflight — check secret key drift</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <script type="module" src="/src/main.ts"></script>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="module" src="/src/legal.ts"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -15,7 +24,8 @@
       <a class="wordmark" href="/" aria-label="Secret Sync Preflight home"><span class="mark" aria-hidden="true"></span><span>SSP<span class="wordmark-muted">/flight</span></span></a>
       <nav aria-label="Primary navigation">
         <a href="#how">How it works</a>
-        <a href="#demo">Live preflight</a>
+        <a href="/demo/">Demo</a>
+        <a href="/privacy/">Privacy</a>
         <a class="nav-install" href="#install">Install</a>
       </nav>
     </header>
@@ -23,87 +33,55 @@
     <main id="main">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Metadata only · Read only</p>
-          <h1 id="hero-title">Know your secrets line up <span>before deploy.</span></h1>
-          <p class="lede">Compare declared key names with every destination. Catch gaps, stale keys, likely renames, and hard provider limits—without touching a secret value.</p>
+          <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Key names only</p>
+          <h1 id="hero-title">Check secret key drift <span>before deployment.</span></h1>
+          <p class="lede">For DevOps teams syncing configuration across CI and hosting services.</p>
           <div class="hero-actions">
-            <a class="button primary" href="#install">Install the CLI</a>
-            <a class="button secondary" href="#demo">Run a local demo</a>
+            <a class="button primary" href="/?demo=1">Try it with sample data</a>
+            <span class="action-note">Opens a seeded drift report in this browser.</span>
+            <a class="button secondary" href="#install">Install the CLI</a>
           </div>
           <ul class="trust-list" aria-label="Product guarantees">
-            <li>No tokens</li><li>No network calls</li><li>Stable CI exits</li>
+            <li>Rejects secret values</li><li>Finds key drift</li><li>Uses clear CI exit codes</li>
           </ul>
         </div>
         <figure class="hero-visual">
           <img src="/parity-lattice.webp" width="1200" height="800" fetchpriority="high" alt="Four dark geometric configuration layers with aligned key-shaped cells, one missing cell, one displaced coral cell, and an amber capacity boundary." />
-          <figcaption><span aria-hidden="true">01</span> Four layers. One contract.</figcaption>
+          <figcaption><span aria-hidden="true">01</span> Four configuration layers. One expected key list.</figcaption>
         </figure>
       </section>
 
       <section class="signal-strip" aria-label="Checks performed">
-        <span>Missing keys</span><span>Excess keys</span><span>Likely renames</span><span>Provider limits</span><span>Delete policy</span>
+        <span>Missing keys</span><span>Extra keys</span><span>Likely renames</span><span>Destination limits</span><span>Delete policy</span>
       </section>
 
       <section class="how section" id="how" aria-labelledby="how-title">
         <div class="section-intro">
-          <p class="eyebrow">A read-only safety layer</p>
-          <h2 id="how-title">The truth is a contract, not a console.</h2>
-          <p><code>sspf</code> keeps ownership explicit: your repository declares the expected names; provider exports describe what exists. The tool compares metadata and stops there.</p>
+          <p class="eyebrow">Key-name checks</p>
+          <h2 id="how-title">Compare expected and destination keys.</h2>
+          <p>Your repository lists expected keys. Each destination export lists keys that exist. The CLI compares key names and makes no changes.</p>
         </div>
         <ol class="steps">
-          <li><span class="step-num">01</span><div><h3>Declare</h3><p>List expected key names per environment in a reviewable TOML manifest.</p></div></li>
-          <li><span class="step-num">02</span><div><h3>Export</h3><p>Produce one key name per line with a provider’s read-only metadata command.</p></div></li>
-          <li><span class="step-num">03</span><div><h3>Block drift</h3><p>Get human, JSON, or GitHub output and a non-zero exit before unsafe deployment.</p></div></li>
+          <li><span class="step-num">01</span><div><h3>List expected keys</h3><p>List each environment’s expected keys in a TOML file.</p></div></li>
+          <li><span class="step-num">02</span><div><h3>Export destination keys</h3><p>Export one key name per line with a read-only provider command.</p></div></li>
+          <li><span class="step-num">03</span><div><h3>Block unsafe deployment</h3><p>Read a terminal, JSON, or GitHub report. Unsafe results exit with an error.</p></div></li>
         </ol>
       </section>
 
       <section class="demo-section section" id="demo" aria-labelledby="demo-title">
         <div class="section-intro demo-intro">
-          <p class="eyebrow">Local browser demo</p>
-          <h2 id="demo-title">Run the comparison here.</h2>
-          <p>Only key names are accepted. Nothing leaves this tab or survives a refresh.</p>
-          <span class="connection" id="connection"><span aria-hidden="true"></span>Ready offline</span>
+          <p class="eyebrow">Sample check</p>
+          <h2 id="demo-title">See a sample drift report.</h2>
+          <p>Open the isolated sample to edit key names and reset it at any time.</p>
         </div>
-        <form class="demo-grid" id="preflight-form" novalidate>
-          <div class="input-panel">
-            <div class="field">
-              <div class="field-heading"><label for="desired">Desired keys</label><span id="desired-count">3 keys</span></div>
-              <textarea id="desired" name="desired" rows="7" spellcheck="false" aria-describedby="desired-help desired-error">API_URL&#10;DATABASE_URL&#10;SESSION_KEY</textarea>
-              <p class="field-help" id="desired-help">One key name per line. Values and assignments are rejected.</p>
-              <p class="field-error" id="desired-error" aria-live="polite"></p>
-            </div>
-            <div class="field">
-              <div class="field-heading"><label for="current">Destination export</label><span id="current-count">4 keys</span></div>
-              <textarea id="current" name="current" rows="7" spellcheck="false" aria-describedby="current-help current-error">API_URL&#10;DATABASE_URL&#10;SESION_KEY&#10;OLD_WEBHOOK_TOKEN</textarea>
-              <p class="field-help" id="current-help">Paste a key-only export; input stays in memory.</p>
-              <p class="field-error" id="current-error" aria-live="polite"></p>
-            </div>
-            <div class="settings-row">
-              <div class="compact-field"><label for="limit">Provider limit</label><input id="limit" name="limit" type="number" min="1" max="10000" value="3" /></div>
-              <div class="compact-field"><label for="policy">Delete policy</label><select id="policy" name="policy"><option value="block">Block</option><option value="warn">Warn</option><option value="allow">Allow</option></select></div>
-            </div>
-            <button class="button primary run-button" type="submit"><span>Run preflight</span><span aria-hidden="true">→</span></button>
-          </div>
-
-          <section class="result-panel" aria-labelledby="result-title">
-            <div class="result-heading"><div><p class="eyebrow">Result / production</p><h3 id="result-title">Unsafe to deploy</h3></div><span class="status-badge danger" id="status-badge">Blocked</span></div>
-            <div class="metric-row" aria-label="Comparison summary">
-              <div><strong id="missing-metric">1</strong><span>Missing</span></div>
-              <div><strong id="extra-metric">2</strong><span>Extra</span></div>
-              <div><strong id="rename-metric">1</strong><span>Rename?</span></div>
-            </div>
-            <div class="capacity" id="capacity-wrap"><div class="capacity-label"><span>Capacity</span><strong id="capacity-label">4 / 3 · over</strong></div><div class="capacity-track" role="meter" aria-label="Provider capacity" aria-valuemin="0" aria-valuemax="3" aria-valuenow="4"><span id="capacity-fill"></span><i id="capacity-limit" aria-hidden="true"></i></div></div>
-            <div class="findings" id="findings" aria-live="polite" aria-atomic="true"></div>
-            <p class="result-note" id="result-note">No changes were made. Review the likely rename, then update the source of truth or destination export.</p>
-          </section>
-        </form>
+        <a class="button primary demo-link" href="/?demo=1">Try it with sample data</a>
       </section>
 
       <section class="install section" id="install" aria-labelledby="install-title">
         <div class="section-intro">
-          <p class="eyebrow">Ship the guardrail</p>
-          <h2 id="install-title">One binary. Zero runtime services.</h2>
-          <p>Build from source today. Release artifacts are published by the Param Factory.</p>
+          <p class="eyebrow">Add the check to CI</p>
+          <h2 id="install-title">Runs locally as one CLI.</h2>
+          <p>Build from source today. Prebuilt downloads are not available yet.</p>
         </div>
         <div class="terminal" aria-label="Installation commands">
           <div class="terminal-bar"><span aria-hidden="true">● ● ●</span><span>shell</span></div>
@@ -118,8 +96,8 @@
 
     <footer>
       <a class="wordmark" href="/" aria-label="Secret Sync Preflight home"><span class="mark" aria-hidden="true"></span><span>SSP<span class="wordmark-muted">/flight</span></span></a>
-      <p>Secret names can be sensitive too. Keep reports local.</p>
-      <nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-secret-sync-preflight">Source</a></nav>
+      <p>Key names can be sensitive. Store reports on your CI runner. Built by Param Factory · v0.1.0</p>
+      <nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-secret-sync-preflight">Source <span class="sr-only">(opens GitHub)</span></a></nav>
     </footer>
   </body>
 </html>

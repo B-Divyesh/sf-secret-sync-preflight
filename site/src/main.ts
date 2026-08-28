@@ -91,10 +91,10 @@ function runPreflight(): void {
   const limitError = !Number.isInteger(limit) || limit < 1 || limit > 10000;
   limitInput.setAttribute("aria-invalid", String(limitError));
   if (desiredResult.error || currentResult.error || limitError) {
-    findings.replaceChildren(finding("danger", "Input error", limitError ? "Provider limit must be from 1 to 10,000." : "Fix the highlighted key list, then run again."));
+    findings.replaceChildren(finding("danger", "Input error", limitError ? "Destination limit must be from 1 to 10,000." : "Fix the highlighted key list, then run again."));
     text("#result-title", "Input needs attention");
     setStatus("Blocked", "danger");
-    text("#result-note", "Assignments are rejected before values can appear in the result.");
+    text("#result-note", "Entries such as KEY=value are rejected before values can appear in the result.");
     return;
   }
 
@@ -111,10 +111,10 @@ function runPreflight(): void {
   text("#missing-metric", String(missing.length));
   text("#extra-metric", String(extra.length));
   text("#rename-metric", String(renames.length));
-  text("#result-title", blocked ? "Unsafe to deploy" : extra.length || atLimit ? "Review before deploy" : "Safe to deploy");
+  text("#result-title", blocked ? "Unsafe to deploy" : extra.length || atLimit ? "Review before deployment" : "Safe to deploy");
   setStatus(blocked ? "Blocked" : extra.length || atLimit ? "Warning" : "Passed", blocked ? "danger" : extra.length || atLimit ? "warning" : "safe");
 
-  const capacity = `${Math.max(desired.size, current.size)} / ${limit} · ${overLimit ? "over" : atLimit ? "at limit" : "within"}`;
+  const capacity = `${Math.max(desired.size, current.size)} keys / ${limit} maximum${overLimit ? " · over limit" : atLimit ? " · at limit" : " · within limit"}`;
   text("#capacity-label", capacity);
   const meter = document.querySelector<HTMLElement>(".capacity-track")!;
   meter.setAttribute("aria-valuemax", String(limit));
@@ -126,11 +126,11 @@ function runPreflight(): void {
   const rows: HTMLElement[] = [];
   renames.forEach(({ current: from, desired: to }) => rows.push(finding("warning", "Rename?", `${from} → ${to}`)));
   missing.forEach((key) => rows.push(finding("danger", "Missing", key)));
-  extra.forEach((key) => rows.push(finding(extrasBlock ? "danger" : "warning", "Extra", `${key} · deletion ${policyInput.value}`)));
-  if (overLimit) rows.push(finding("danger", "Over limit", `${Math.max(desired.size, current.size) - limit} key(s) beyond provider maximum`));
-  if (rows.length === 0) rows.push(finding("safe", "Aligned", "All declared keys are present; no excess keys found."));
+  extra.forEach((key) => rows.push(finding(extrasBlock ? "danger" : "warning", "Extra", `${key}. Deletion is ${policyInput.value === "block" ? "blocked" : policyInput.value}.`)));
+  if (overLimit) rows.push(finding("danger", "Over limit", `${Math.max(desired.size, current.size) - limit} key above the destination maximum.`));
+  if (rows.length === 0) rows.push(finding("safe", "Aligned", "All expected keys are present. No extra keys found."));
   findings.replaceChildren(...rows);
-  text("#result-note", "No changes were made. Review findings, then update the source of truth or destination export.");
+  text("#result-note", "No changes were made. Review the report. Then update the expected keys or destination export.");
 }
 
 function setStatus(label: string, kind: "danger" | "warning" | "safe"): void {
@@ -151,8 +151,19 @@ window.addEventListener("online", updateConnection);
 window.addEventListener("offline", updateConnection);
 updateConnection();
 
-const copyButton = document.querySelector<HTMLButtonElement>("#copy-command")!;
-copyButton.addEventListener("click", async () => {
+const resetButton = document.querySelector<HTMLButtonElement>("#reset-demo");
+resetButton?.addEventListener("click", () => {
+  desiredInput.value = "API_URL\nDATABASE_URL\nSESSION_KEY";
+  currentInput.value = "API_URL\nDATABASE_URL\nSESION_KEY\nOLD_WEBHOOK_TOKEN";
+  limitInput.value = "3";
+  policyInput.value = "block";
+  runPreflight();
+  resetButton.textContent = "Demo reset";
+  window.setTimeout(() => { resetButton.textContent = "Reset demo"; }, 1600);
+});
+
+const copyButton = document.querySelector<HTMLButtonElement>("#copy-command");
+copyButton?.addEventListener("click", async () => {
   try {
     await navigator.clipboard.writeText(copyButton.dataset.copy ?? "");
     copyButton.textContent = "Copied";
