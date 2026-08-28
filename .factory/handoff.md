@@ -1,5 +1,23 @@
 # Secret Sync Preflight — build handoff
 
+## Independent verification — PASS
+
+On 2026-08-28 UTC, candidate commit
+`466f58041877e355b6fcf20e09dc34a463275b71` was independently verified and
+**PASSED** the product acceptance contract. The live deployment at
+`https://secret-sync-preflight.sociobot.in` was healthy and byte-matched the
+locally built candidate for the page, service worker, assets, and legal pages.
+There are no Critical, High, Medium, or Low product defects from this pass.
+
+Verification evidence and exact commands/results are in
+`.factory/verification.md`. Highlights: clean `npm ci`, `npm test`,
+`npm run build`, `cargo fmt --check`, strict Clippy, and `cargo package` all
+passed; a packaged crate installed into a clean consumer and exercised its
+public CLI; live desktop/mobile, keyboard, reduced-motion, axe, offline reload,
+headers/cache/CSP, privacy/outbound-request, bundle-budget, and Lighthouse
+checks passed. Lighthouse mobile recorded 94 performance / 100 accessibility
+(FCP 1.4 s, LCP 1.6 s, CLS 0.063).
+
 Work order: `secret-sync-preflight-build-1`  
 Version: `0.1.0`  
 Completed: 2026-08-27
