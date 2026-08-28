@@ -35,8 +35,8 @@ Manual CLI smoke check: `./target/release/sspf demo` returned its expected drift
 
 ## Deploy
 
-Static output is `dist/site/`; deployment is expected to use the repository static-site work-order integration. No deployment credentials or local deployment configuration were present in the repository.
+Static output is `dist/site/`; no deployment credentials or local deployment configuration were present in the repository. The repair was pushed to `origin/main` at `f8c9dc9`. At 2026-08-28 10:39 UTC, the live host still served the previous artifact (`/demo/` contained “Know your secrets line up” and unknown URLs returned 200), so the factory deployment trigger has not propagated yet.
 
 ## Known gaps
 
-No known blocking findings remain. Prebuilt binary downloads are intentionally not offered; source install is documented.
+No code or review blocker remains. Deployment propagation is pending outside this repository. Prebuilt binary downloads are intentionally not offered; source install is documented.
