@@ -91,8 +91,10 @@ The browser sample uses no cookies, local storage, session storage, or IndexedDB
 
 ## Develop and verify
 
+Prerequisites: a current Rust toolchain, a C compiler, Node.js, and npm.
+
 ```sh
-npm install
+npm ci
 npm test
 npm run build
 cargo package
