@@ -6,6 +6,8 @@
 
 The static site from that implementation is deployed at `https://secret-sync-preflight.sociobot.in`. Later commits update only documentation and do not require another product image.
 
+Documentation evidence SHA: `3b77a07c8e5d2537d42fae7b3be136d9aba91eb6`. The following pointer-only commit records that immutable handoff snapshot.
+
 ## What changed
 
 - Added a self-hosted SVG terminal recording and text transcript from the real `sspf demo` command. The browser test compares every normalized line with a fresh CLI run.
