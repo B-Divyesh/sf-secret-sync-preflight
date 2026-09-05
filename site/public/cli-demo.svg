@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Recording of the sspf demo command</title>
+  <desc id="desc">The real CLI reports one missing key, two extra keys, one likely rename, and one destination over its limit.</desc>
+  <style>
+    .progress { transform-origin: 34px 734px; animation: play 7s linear forwards; }
+    @keyframes play { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+    @media (prefers-reduced-motion: reduce) { .progress { animation: none } }
+  </style>
+  <rect width="1200" height="760" rx="8" fill="#050d0b"/>
+  <rect x="1" y="1" width="1198" height="758" rx="7" fill="none" stroke="#30453e" stroke-width="2"/>
+  <path d="M1 46h1198" stroke="#263a34" stroke-width="2"/>
+  <circle cx="28" cy="23" r="6" fill="#ff7b72"/><circle cx="50" cy="23" r="6" fill="#ffcf70"/><circle cx="72" cy="23" r="6" fill="#69f0b0"/>
+  <text x="1128" y="29" text-anchor="end" fill="#758b81" font-family="ui-monospace, monospace" font-size="14">SSPF DEMO · 00:07</text>
+  <g font-family="ui-monospace, monospace" font-size="16" fill="#d9e4db">
+    <text class="line l1" data-output="command" x="34" y="80"><tspan fill="#69f0b0">$</tspan> sspf demo</text>
+    <text class="line l2" data-output="line" x="34" y="112">Demo files: /tmp/sspf-demo-&lt;id&gt;</text>
+    <text class="line l3" data-output="line" x="34" y="144">Sample data contains key names only. No provider login or network is used.</text>
+    <text class="line l4" data-output="line" x="34" y="176">ENV   staging (3 expected keys)</text>
+    <text class="line l5" data-output="line" x="34" y="208"><tspan fill="#69f0b0">  PASS</tspan>  ci — 3 destination keys / 3 expected keys</text>
+    <text class="line l6" data-output="line" x="34" y="240">    LIMIT   OK: expected 3, destination 3, maximum 10</text>
+    <text class="line l7" data-output="line" x="34" y="272">ENV   production (3 expected keys)</text>
+    <text class="line l8" data-output="line" x="34" y="304"><tspan fill="#ff7b72">  BLOCK</tspan> hosting — 4 destination keys / 3 expected keys</text>
+    <text class="line l9" data-output="line" x="34" y="336"><tspan fill="#ffcf70">    RENAME?</tspan> SESION_KEY -&gt; SESSION_KEY</text>
+    <text class="line l10" data-output="line" x="34" y="368"><tspan fill="#ff7b72">    MISSING</tspan> SESSION_KEY</text>
+    <text class="line l11" data-output="line" x="34" y="400">    EXTRA   OLD_WEBHOOK_TOKEN</text>
+    <text class="line l12" data-output="line" x="34" y="432">    EXTRA   SESION_KEY</text>
+    <text class="line l13" data-output="line" x="34" y="464"><tspan fill="#ffcf70">    LIMIT   OVER:</tspan> expected 3, destination 4, maximum 3</text>
+    <text class="line l14" data-output="line" x="34" y="496">    WHY     1 expected key is missing</text>
+    <text class="line l15" data-output="line" x="34" y="528">    WHY     destination key limit exceeded</text>
+    <text class="line l16" data-output="line" x="34" y="560">    WHY     2 extra keys require deletion review</text>
+    <text class="line l17" data-output="line" x="34" y="592"><tspan fill="#ff7b72">FAIL</tspan>  2 destinations, 1 missing, 2 extra, 1 likely rename, 1 over limit</text>
+  </g>
+  <g class="line l18">
+    <rect x="34" y="628" width="1132" height="88" fill="#0d1a17" stroke="#263a34"/>
+    <text x="54" y="664" fill="#ff7b72" font-family="ui-monospace, monospace" font-size="15">EXIT 1 · DRIFT FOUND</text>
+    <text x="54" y="693" fill="#a9b9af" font-family="ui-monospace, monospace" font-size="14">Files: /tmp/sspf-demo-&lt;id&gt;</text>
+  </g>
+  <rect class="progress" x="34" y="733" width="1132" height="3" fill="#69f0b0"/>
+</svg>

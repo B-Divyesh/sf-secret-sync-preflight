@@ -1,51 +1,100 @@
 [
   {
     "id": "demo-command",
-    "claim": "Run a bundled sample with `sspf demo`.",
-    "where": "landing demo recording, README",
+    "claim": "`sspf demo` creates a new temporary folder, copies the bundled sample exactly, prints the folder, and runs the real check.",
+    "where": "landing recording, README",
     "test": "cargo test --test claims claim_demo_command_uses_bundled_key_only_files",
-    "sandbox": "fresh temporary directory; invoke the installed test binary with the demo subcommand"
+    "sandbox": "fresh working directory; parse the printed temporary path, compare all files with examples, and confirm the working directory stays unchanged"
+  },
+  {
+    "id": "cli-recording",
+    "claim": "The landing recording shows the current output from the real `sspf demo` command.",
+    "where": "landing recording",
+    "test": "npm run test:claims -- --grep @claim:cli-recording",
+    "sandbox": "fresh browser page; execute the real CLI, normalize only its generated temporary path, and compare every output line with the rendered SVG and transcript"
   },
   {
     "id": "drift-report",
-    "claim": "Find missing, extra, renamed, and over-limit keys.",
+    "claim": "The CLI finds missing, extra, renamed, and over-limit keys across every sample destination without changing inputs.",
     "where": "landing page, README",
     "test": "cargo test --test claims claim_check_finds_the_advertised_drift_states",
-    "sandbox": "bundled key-name-only fixture; parse JSON report"
+    "sandbox": "bundled multi-environment fixture; parse JSON results and compare every input byte before and after"
   },
   {
     "id": "no-secret-values",
-    "claim": "Reject secret values without printing them.",
-    "where": "landing page, README",
+    "claim": "The CLI rejects assignments, JSON, and lines containing spaces without printing their key or value or writing a report.",
+    "where": "landing scope, README, privacy page",
     "test": "cargo test --test claims claim_values_are_rejected_without_echoing_them",
-    "sandbox": "temporary export containing a unique assignment sentinel"
+    "sandbox": "temporary exports with unique sentinels; inspect stdout, stderr, status, and requested report paths in all output modes"
+  },
+  {
+    "id": "key-file-rules",
+    "claim": "Key files accept blank lines, comments, and documented name characters, and reject unsupported characters.",
+    "where": "README",
+    "test": "cargo test --test claims claim_key_file_rules_accept_and_reject_the_documented_inputs",
+    "sandbox": "temporary key files; compare commented and stripped reports, then exercise every allowed class and adjacent invalid characters"
+  },
+  {
+    "id": "delete-policy",
+    "claim": "Block fails on extra keys, warn and allow report without failing, and strict mode fails under all three policies.",
+    "where": "README",
+    "test": "cargo test --test claims claim_delete_policy_and_strict_mode_cover_every_policy",
+    "sandbox": "temporary manifest and export; run the full three-policy matrix with and without strict mode"
   },
   {
     "id": "ci-exit-codes",
-    "claim": "Use exit code 0 for pass, 1 for drift, and 2 for invalid input.",
-    "where": "README",
+    "claim": "The CLI exits 0 for pass, 1 for drift, and 2 for invalid input.",
+    "where": "landing page, README",
     "test": "cargo test --test claims claim_exit_codes_describe_pass_drift_and_input_error",
-    "sandbox": "temporary clean fixture, bundled drift fixture, and missing manifest"
+    "sandbox": "temporary passing fixture, bundled drift fixture, and missing manifest"
   },
   {
     "id": "report-formats",
-    "claim": "Print terminal, JSON, or GitHub reports and write a report only when requested.",
-    "where": "README",
-    "test": "cargo test --test claims claim_json_github_and_local_report_are_observable",
-    "sandbox": "bundled fixture and an explicit temporary report path"
+    "claim": "The CLI prints terminal, JSON, or GitHub reports and creates a report file only when `--report` is used.",
+    "where": "landing page, README, privacy page",
+    "test": "cargo test --test claims claim_terminal_json_github_and_opt_in_report_are_observable",
+    "sandbox": "fresh directory; exercise all stdout formats, confirm no implicit file, and parse an explicitly requested report"
+  },
+  {
+    "id": "cli-local-read-only",
+    "claim": "The installed package provides one CLI, needs no service, makes no network calls, and leaves local inputs unchanged.",
+    "where": "landing facts and scope, README, terms page",
+    "test": "npm run test:consumer",
+    "sandbox": "package and install into a fresh consumer root; run with socket calls blocked and logged, decoy provider credentials, hashed inputs, and an empty output directory"
+  },
+  {
+    "id": "demo-entry",
+    "claim": "One click from the landing page opens the populated sample report without a provider login.",
+    "where": "landing first screen",
+    "test": "npm run test:claims -- --grep @claim:demo-entry",
+    "sandbox": "fresh browser page; click the primary landing action and assert the URL, persistent label, realistic findings, limit, and absence of a login field"
   },
   {
     "id": "demo-browser-isolation",
-    "claim": "Browser demo sample data is resettable and is not saved to browser storage.",
-    "where": "demo banner, README",
+    "claim": "Browser sample edits reset and clear on refresh without changing real browser data.",
+    "where": "demo banner, landing page, README, privacy page",
     "test": "npm run test:claims -- --grep @claim:demo-browser-isolation",
-    "sandbox": "fresh browser context at /demo; edit, reset, inspect local/session storage and reload"
+    "sandbox": "fresh browser context with real-data sentinels; enter from landing, edit, reset, leave, reload, and inspect cookies and browser databases"
   },
   {
     "id": "demo-browser-network",
-    "claim": "The browser demo makes no requests beyond this site and works after its first visit offline.",
-    "where": "landing facts, demo banner, README",
+    "claim": "The browser demo requests files only from this site and works offline after its first visit.",
+    "where": "landing facts, README, privacy page",
     "test": "npm run test:claims -- --grep @claim:demo-browser-network",
-    "sandbox": "fresh browser context; record requests, then set offline after initial /demo load"
+    "sandbox": "dedicated fresh browser context; record the complete setup, reload, action, and offline flow before checking every request"
+  },
+  {
+    "id": "free-mit",
+    "claim": "Secret Sync Preflight is free software under the MIT License.",
+    "where": "landing facts, terms page, README",
+    "test": "cargo test --test claims claim_repository_carries_the_mit_license",
+    "sandbox": "clean checkout; inspect package metadata and the complete license grant"
+  },
+  {
+    "id": "site-deployment",
+    "claim": "The static build serves its pages with security headers and returns the designed page with HTTP 404 for unknown routes.",
+    "where": "README",
+    "test": "npm run test:claims -- --grep @claim:site-deployment",
+    "sandbox": "fresh production site build served locally; inspect response status, headers, metadata, and shared page shell"
   }
 ]

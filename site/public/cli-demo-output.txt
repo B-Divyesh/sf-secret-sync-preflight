@@ -1,0 +1,16 @@
+Demo files: /tmp/sspf-demo-<id>
+Sample data contains key names only. No provider login or network is used.
+ENV   staging (3 expected keys)
+  PASS  ci — 3 destination keys / 3 expected keys
+    LIMIT   OK: expected 3, destination 3, maximum 10
+ENV   production (3 expected keys)
+  BLOCK hosting — 4 destination keys / 3 expected keys
+    RENAME? SESION_KEY -> SESSION_KEY
+    MISSING SESSION_KEY
+    EXTRA   OLD_WEBHOOK_TOKEN
+    EXTRA   SESION_KEY
+    LIMIT   OVER: expected 3, destination 4, maximum 3
+    WHY     1 expected key is missing
+    WHY     destination key limit exceeded
+    WHY     2 extra keys require deletion review
+FAIL  2 destinations, 1 missing, 2 extra, 1 likely rename, 1 over limit

@@ -4,12 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#07110f" />
-    <meta name="description" content="Try the Secret Sync Preflight sample drift report in an isolated browser demo." />
+    <meta name="description" content="Edit an isolated sample secret key drift report in your browser." />
     <link rel="canonical" href="https://secret-sync-preflight.sociobot.in/demo/" />
     <meta property="og:title" content="Demo — Secret Sync Preflight" />
-    <meta property="og:description" content="Try an isolated sample drift report." />
+    <meta property="og:description" content="Edit an isolated sample secret key drift report in your browser." />
     <meta property="og:image" content="https://secret-sync-preflight.sociobot.in/social-card.svg" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Demo — Secret Sync Preflight" />
+    <meta name="twitter:description" content="Edit an isolated sample secret key drift report in your browser." />
+    <meta name="twitter:image" content="https://secret-sync-preflight.sociobot.in/social-card.svg" />
     <title>Demo — Secret Sync Preflight</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -17,23 +20,20 @@
   </head>
   <body class="demo-page">
     <a class="skip-link" href="#main">Skip to content</a>
-    <header class="site-header">
-      <a class="wordmark" href="/" aria-label="Secret Sync Preflight home"><span class="mark" aria-hidden="true"></span><span>SSP<span class="wordmark-muted">/flight</span></span></a>
-      <nav aria-label="Primary navigation"><a href="/">How it works</a><a aria-current="page" href="/demo/">Demo</a><a href="/privacy/">Privacy</a><a class="nav-install" href="/#install">Install</a></nav>
-    </header>
+    <div data-site-header></div>
     <main id="main" tabindex="-1">
       <section class="demo-section section demo-route" aria-labelledby="demo-title">
-        <div class="demo-banner" role="status"><strong>Demo — sample data, nothing is saved</strong><span>Use the seeded report safely in this tab.</span><button id="reset-demo" type="button">Reset demo</button><a href="/?from=demo">Start for real</a></div>
+        <div class="demo-banner"><strong>Demo — sample data, nothing is saved</strong><span>Edits clear when you leave or refresh.</span><button id="reset-demo" type="button">Reset demo</button><a href="/">Start for real</a></div>
         <div class="section-intro demo-intro">
           <p class="eyebrow">Isolated sample</p>
           <h1 id="demo-title">Check a sample secret key drift report.</h1>
-          <p>Edit the expected keys or destination keys. Reset restores the sample.</p>
-          <span class="connection" id="connection"><span aria-hidden="true"></span>Ready offline</span>
+          <p>Edit the expected or destination keys. Reset restores the sample.</p>
+          <span class="connection" id="connection"><span aria-hidden="true"></span>Preparing offline demo</span>
         </div>
         <form class="demo-grid" id="preflight-form" novalidate>
           <div class="input-panel">
-            <div class="field"><div class="field-heading"><label for="desired">Expected keys</label><span id="desired-count">3 keys</span></div><textarea id="desired" name="desired" rows="7" spellcheck="false" aria-describedby="desired-help desired-error">API_URL&#10;DATABASE_URL&#10;SESSION_KEY</textarea><p class="field-help" id="desired-help">One key name per line. Entries such as <code>KEY=value</code> are rejected.</p><p class="field-error" id="desired-error" aria-live="polite"></p></div>
-            <div class="field"><div class="field-heading"><label for="current">Destination keys</label><span id="current-count">4 keys</span></div><textarea id="current" name="current" rows="7" spellcheck="false" aria-describedby="current-help current-error">API_URL&#10;DATABASE_URL&#10;SESION_KEY&#10;OLD_WEBHOOK_TOKEN</textarea><p class="field-help" id="current-help">Paste one key name per line. Refreshing clears edits.</p><p class="field-error" id="current-error" aria-live="polite"></p></div>
+            <div class="field"><div class="field-heading"><label for="expected">Expected keys</label><span id="expected-count">3 keys</span></div><textarea id="expected" name="expected" rows="7" spellcheck="false" aria-describedby="expected-help expected-error">API_URL&#10;DATABASE_URL&#10;SESSION_KEY</textarea><p class="field-help" id="expected-help">Enter one key name per line. Entries such as <code>KEY=value</code> are rejected.</p><p class="field-error" id="expected-error" aria-live="polite"></p></div>
+            <div class="field"><div class="field-heading"><label for="current">Destination keys</label><span id="current-count">4 keys</span></div><textarea id="current" name="current" rows="7" spellcheck="false" aria-describedby="current-help current-error">API_URL&#10;DATABASE_URL&#10;SESION_KEY&#10;OLD_WEBHOOK_TOKEN</textarea><p class="field-help" id="current-help">Enter one key name per line. Refreshing clears edits.</p><p class="field-error" id="current-error" aria-live="polite"></p></div>
             <div class="settings-row"><div class="compact-field"><label for="limit">Destination limit</label><input id="limit" name="limit" type="number" min="1" max="10000" value="3" /></div><div class="compact-field"><label for="policy">Delete policy</label><select id="policy" name="policy"><option value="block">Block</option><option value="warn">Warn</option><option value="allow">Allow</option></select></div></div>
             <button class="button primary run-button" type="submit"><span>Show drift report</span><span aria-hidden="true">→</span></button>
           </div>
@@ -41,6 +41,6 @@
         </form>
       </section>
     </main>
-    <footer><a class="wordmark" href="/" aria-label="Secret Sync Preflight home"><span class="mark" aria-hidden="true"></span><span>SSP<span class="wordmark-muted">/flight</span></span></a><p>Key names can be sensitive. Store reports on your CI runner. Built by Param Factory · v0.1.0</p><nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-secret-sync-preflight">Source <span class="sr-only">(opens GitHub)</span></a></nav></footer>
+    <div data-site-footer></div>
   </body>
 </html>

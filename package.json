@@ -10,13 +10,15 @@
     "build": "npm run build:cli && npm run build:site",
     "test:site": "tsc --noEmit && npm run build:site && playwright test",
     "test:claims": "tsc --noEmit && playwright test",
-    "test": "cargo test && npm run test:site"
+    "test:consumer": "bash scripts/claim-cli-consumer.sh",
+    "test": "cargo test && npm run test:consumer && npm run test:site"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.10.2",
     "@fontsource/ibm-plex-mono": "5.2.6",
     "@fontsource/inter": "5.2.6",
     "@playwright/test": "1.58.2",
+    "@types/node": "24.3.0",
     "typescript": "5.9.2",
     "vite": "7.3.6"
   }

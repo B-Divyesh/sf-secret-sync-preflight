@@ -1,11 +1,4 @@
-import "@fontsource/inter/latin-400.css";
-import "@fontsource/inter/latin-600.css";
-import "@fontsource/ibm-plex-mono/latin-500.css";
-import "./styles.css";
-
-if ("serviceWorker" in navigator && import.meta.env.PROD) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => undefined));
-}
+import "./shell";
 
 const KEY_PATTERN = /^[A-Za-z0-9_.\-/:]{1,255}$/;
 
@@ -19,7 +12,7 @@ function parseKeys(value: string): ParseResult {
     const candidate = lines[index].trim();
     if (!candidate || candidate.startsWith("#")) continue;
     if (candidate.includes("=") || /\s/.test(candidate) || !KEY_PATTERN.test(candidate)) {
-      return { keys: [], error: `Line ${index + 1} is not a key-only record. Remove values or spaces.` };
+      return { keys: [], error: `Line ${index + 1} must contain one key name. Remove values or spaces.` };
     }
     if (seen.has(candidate)) return { keys: [], error: `Line ${index + 1} duplicates an earlier key.` };
     seen.add(candidate);
@@ -53,7 +46,7 @@ function likelyRenames(missing: string[], extra: string[]): Array<{ current: str
 }
 
 const form = document.querySelector<HTMLFormElement>("#preflight-form")!;
-const desiredInput = document.querySelector<HTMLTextAreaElement>("#desired")!;
+const desiredInput = document.querySelector<HTMLTextAreaElement>("#expected")!;
 const currentInput = document.querySelector<HTMLTextAreaElement>("#current")!;
 const limitInput = document.querySelector<HTMLInputElement>("#limit")!;
 const policyInput = document.querySelector<HTMLSelectElement>("#policy")!;
@@ -79,7 +72,7 @@ function setFieldState(input: HTMLTextAreaElement, result: ParseResult): void {
   const id = input.id;
   input.setAttribute("aria-invalid", String(Boolean(result.error)));
   text(`#${id}-error`, result.error ?? "");
-  text(`#${id}-count`, result.error ? "Check input" : `${result.keys.length} ${result.keys.length === 1 ? "key" : "keys"}`);
+  text(`#${id}-count`, result.error ? "Fix the key list" : `${result.keys.length} ${result.keys.length === 1 ? "key" : "keys"}`);
 }
 
 function runPreflight(): void {
@@ -91,8 +84,8 @@ function runPreflight(): void {
   const limitError = !Number.isInteger(limit) || limit < 1 || limit > 10000;
   limitInput.setAttribute("aria-invalid", String(limitError));
   if (desiredResult.error || currentResult.error || limitError) {
-    findings.replaceChildren(finding("danger", "Input error", limitError ? "Destination limit must be from 1 to 10,000." : "Fix the highlighted key list, then run again."));
-    text("#result-title", "Input needs attention");
+    findings.replaceChildren(finding("danger", "Input error", limitError ? "Destination limit must be between 1 and 10,000." : "Fix the highlighted key list, then run again."));
+    text("#result-title", "Fix the key list");
     setStatus("Blocked", "danger");
     text("#result-note", "Entries such as KEY=value are rejected before values can appear in the result.");
     return;
@@ -126,9 +119,17 @@ function runPreflight(): void {
   const rows: HTMLElement[] = [];
   renames.forEach(({ current: from, desired: to }) => rows.push(finding("warning", "Rename?", `${from} → ${to}`)));
   missing.forEach((key) => rows.push(finding("danger", "Missing", key)));
-  extra.forEach((key) => rows.push(finding(extrasBlock ? "danger" : "warning", "Extra", `${key}. Deletion is ${policyInput.value === "block" ? "blocked" : policyInput.value}.`)));
-  if (overLimit) rows.push(finding("danger", "Over limit", `${Math.max(desired.size, current.size) - limit} key above the destination maximum.`));
-  if (rows.length === 0) rows.push(finding("safe", "Aligned", "All expected keys are present. No extra keys found."));
+  extra.forEach((key) => {
+    const policyMessage = policyInput.value === "block"
+      ? "Deletion is blocked."
+      : `${policyInput.value === "warn" ? "Warn" : "Allow"} policy; no change is made.`;
+    rows.push(finding(extrasBlock ? "danger" : "warning", "Extra", `${key}. ${policyMessage}`));
+  });
+  if (overLimit) {
+    const difference = Math.max(desired.size, current.size) - limit;
+    rows.push(finding("danger", "Over limit", `${difference} ${difference === 1 ? "key" : "keys"} above the destination maximum.`));
+  }
+  if (rows.length === 0) rows.push(finding("safe", "No drift", "All expected keys are present. No extra keys were found."));
   findings.replaceChildren(...rows);
   text("#result-note", "No changes were made. Review the report. Then update the expected keys or destination export.");
 }
@@ -143,13 +144,22 @@ form.addEventListener("submit", (event) => { event.preventDefault(); runPrefligh
 [desiredInput, currentInput].forEach((input) => input.addEventListener("input", () => setFieldState(input, parseKeys(input.value))));
 
 const connection = document.querySelector<HTMLElement>("#connection")!;
+let offlinePrepared = false;
 function updateConnection(): void {
   connection.classList.toggle("offline", !navigator.onLine);
-  connection.lastChild!.textContent = navigator.onLine ? "Ready offline" : "Offline · demo still works";
+  connection.lastChild!.textContent = navigator.onLine
+    ? offlinePrepared ? "Available offline" : "Preparing offline demo"
+    : "Offline · demo still works";
 }
 window.addEventListener("online", updateConnection);
 window.addEventListener("offline", updateConnection);
 updateConnection();
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.ready.then(() => {
+    offlinePrepared = true;
+    updateConnection();
+  }).catch(() => undefined);
+}
 
 const resetButton = document.querySelector<HTMLButtonElement>("#reset-demo");
 resetButton?.addEventListener("click", () => {
@@ -160,19 +170,6 @@ resetButton?.addEventListener("click", () => {
   runPreflight();
   resetButton.textContent = "Demo reset";
   window.setTimeout(() => { resetButton.textContent = "Reset demo"; }, 1600);
-});
-
-const copyButton = document.querySelector<HTMLButtonElement>("#copy-command");
-copyButton?.addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(copyButton.dataset.copy ?? "");
-    copyButton.textContent = "Copied";
-    text("#copy-status", "Install command copied to clipboard.");
-  } catch {
-    copyButton.textContent = "Copy unavailable";
-    text("#copy-status", "Clipboard access was unavailable. Select the command above to copy it.");
-  }
-  window.setTimeout(() => { copyButton.textContent = "Copy install command"; }, 2000);
 });
 
 runPreflight();

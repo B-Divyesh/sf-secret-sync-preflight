@@ -11,6 +11,17 @@ createServer((request, response) => {
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, "index.html");
   const found = existsSync(file) && statSync(file).isFile();
   if (!found) file = join(root, "404.html");
-  response.writeHead(found ? 200 : 404, { "Content-Type": types[extname(file)] ?? "application/octet-stream", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer" });
+  const headers = {
+    "Content-Type": types[extname(file)] ?? "application/octet-stream",
+    "Content-Security-Policy": "default-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+  };
+  if (path.startsWith("/assets/") || path.endsWith(".webp")) {
+    headers["Cache-Control"] = "public, max-age=31536000, immutable";
+  }
+  response.writeHead(found ? 200 : 404, headers);
   createReadStream(file).pipe(response);
 }).listen(4173, "127.0.0.1");

@@ -1,1 +1,41 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07110f"><meta name="description" content="Privacy policy for Secret Sync Preflight."><link rel="canonical" href="https://secret-sync-preflight.sociobot.in/privacy/"><meta property="og:title" content="Privacy — Secret Sync Preflight"><meta property="og:description" content="How Secret Sync Preflight handles data."><meta property="og:image" content="https://secret-sync-preflight.sociobot.in/social-card.svg"><meta name="twitter:card" content="summary_large_image"><title>Privacy — Secret Sync Preflight</title><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><script type="module" src="/src/legal.ts"></script></head><body><a class="skip-link" href="#main">Skip to content</a><header class="site-header"><a class="wordmark" href="/" aria-label="Secret Sync Preflight home"><span class="mark" aria-hidden="true"></span><span>SSP<span class="wordmark-muted">/flight</span></span></a><nav aria-label="Primary navigation"><a href="/#how">How it works</a><a href="/demo/">Demo</a><a aria-current="page" href="/privacy/">Privacy</a><a class="nav-install" href="/#install">Install</a></nav></header><main id="main" class="legal-page" tabindex="-1"><p class="eyebrow">Policy / 2026-08-28</p><h1>Privacy for key-name checks.</h1><p class="legal-lede">The CLI works with local key-name files. The browser sample stays in the current tab.</p><h2>CLI data</h2><p>The CLI reads a local manifest and key-name exports. It writes a report only when you provide <code>--report</code>. Reports can contain key names, so restrict access to them.</p><h2>Browser demo</h2><p>The demo keeps sample edits in page memory. It does not write cookies, local storage, or session storage. Refreshing or resetting discards edits.</p><h2>Site operation</h2><p>This site has no analytics, advertising, tracking pixels, third-party scripts, or remote fonts. The hosting platform may process ordinary request metadata for security and operations.</p><h2>Your choices</h2><p>Do not paste secret values into the demo. Entries such as <code>KEY=value</code> are rejected.</p></main><footer><a class="wordmark" href="/" aria-label="Secret Sync Preflight home"><span class="mark" aria-hidden="true"></span><span>SSP<span class="wordmark-muted">/flight</span></span></a><p>Key names can be sensitive. Store reports on your CI runner. Built by Param Factory · v0.1.0</p><nav aria-label="Legal"><a aria-current="page" href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-secret-sync-preflight">Source <span class="sr-only">(opens GitHub)</span></a></nav></footer></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07110f" />
+    <meta name="description" content="How Secret Sync Preflight handles local key-name files and browser sample data." />
+    <link rel="canonical" href="https://secret-sync-preflight.sociobot.in/privacy/" />
+    <meta property="og:title" content="Privacy — Secret Sync Preflight" />
+    <meta property="og:description" content="How Secret Sync Preflight handles local key-name files and browser sample data." />
+    <meta property="og:image" content="https://secret-sync-preflight.sociobot.in/social-card.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Privacy — Secret Sync Preflight" />
+    <meta name="twitter:description" content="How Secret Sync Preflight handles local key-name files and browser sample data." />
+    <meta name="twitter:image" content="https://secret-sync-preflight.sociobot.in/social-card.svg" />
+    <title>Privacy — Secret Sync Preflight</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="module" src="/src/legal.ts"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div data-site-header></div>
+    <main id="main" class="legal-page" tabindex="-1">
+      <p class="eyebrow">Policy · 5 September 2026</p>
+      <h1>Privacy for secret key drift checks.</h1>
+      <p class="legal-lede">The CLI uses local key-name files. The browser sample stays in the current tab.</p>
+      <h2>CLI data</h2>
+      <p>The CLI reads the manifest and destination exports you provide. It writes a report only when you use <code>--report</code>.</p>
+      <p>Reports can contain key names. Restrict access to every saved report.</p>
+      <h2>Browser sample</h2>
+      <p>The sample does not write cookies, local storage, session storage, or IndexedDB. Refreshing or resetting discards edits.</p>
+      <h2>Site requests</h2>
+      <p>The pages request files only from this site. They send no analytics or advertising requests.</p>
+      <p>The hosting platform may process ordinary request details for security and operations.</p>
+      <h2>Privacy questions</h2>
+      <p>Send a private report through <a href="https://github.com/B-Divyesh/sf-secret-sync-preflight/security/advisories/new">GitHub Security Advisories <span class="sr-only">(opens GitHub)</span></a>. Never include secret values.</p>
+    </main>
+    <div data-site-footer></div>
+  </body>
+</html>

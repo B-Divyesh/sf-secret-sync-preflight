@@ -256,7 +256,7 @@ pub fn read_key_export(path: &Path) -> Result<BTreeSet<String>, PreflightError> 
             || !is_valid_key(candidate)
         {
             return Err(error(format!(
-                "key export {} line {} is not a key-only record; remove values and structured data",
+                "key export {} line {} must contain one key name; remove values or spaces",
                 path.display(),
                 index + 1
             )));
@@ -312,20 +312,41 @@ pub fn run(
             });
             let mut reasons = Vec::new();
             if !missing.is_empty() {
-                reasons.push(format!("{} required key(s) missing", missing.len()));
+                reasons.push(format!(
+                    "{} expected {} missing",
+                    missing.len(),
+                    if missing.len() == 1 {
+                        "key is"
+                    } else {
+                        "keys are"
+                    }
+                ));
             }
             if capacity.as_ref().is_some_and(|value| value.over_limit) {
-                reasons.push("provider key limit exceeded".to_owned());
+                reasons.push("destination key limit exceeded".to_owned());
             }
             if !extra.is_empty()
                 && (strict_extra || matches!(destination.delete_policy, DeletePolicy::Block))
             {
                 reasons.push(match destination.delete_policy {
                     DeletePolicy::Block => format!(
-                        "{} extra key(s) would require a blocked deletion",
-                        extra.len()
+                        "{} extra {} deletion review",
+                        extra.len(),
+                        if extra.len() == 1 {
+                            "key requires"
+                        } else {
+                            "keys require"
+                        }
                     ),
-                    _ => format!("{} extra key(s) rejected by strict mode", extra.len()),
+                    _ => format!(
+                        "{} extra {} strict mode",
+                        extra.len(),
+                        if extra.len() == 1 {
+                            "key fails"
+                        } else {
+                            "keys fail"
+                        }
+                    ),
                 });
             }
             let blocked = !reasons.is_empty();

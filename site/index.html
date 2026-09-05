@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#07110f" />
-    <meta name="description" content="A CLI for DevOps teams to find secret key drift before deployment." />
+    <meta name="description" content="A local CLI for DevOps teams to find secret key drift before deployment." />
     <link rel="canonical" href="https://secret-sync-preflight.sociobot.in/" />
     <meta property="og:title" content="Secret Sync Preflight — check secret key drift" />
-    <meta property="og:description" content="A CLI for DevOps teams to find secret key drift before deployment." />
+    <meta property="og:description" content="A local CLI for DevOps teams to find secret key drift before deployment." />
     <meta property="og:image" content="https://secret-sync-preflight.sociobot.in/social-card.svg" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Secret Sync Preflight — check secret key drift" />
-    <meta name="twitter:description" content="A CLI for DevOps teams to find secret key drift before deployment." />
+    <meta name="twitter:description" content="A local CLI for DevOps teams to find secret key drift before deployment." />
     <meta name="twitter:image" content="https://secret-sync-preflight.sociobot.in/social-card.svg" />
     <title>Secret Sync Preflight — check secret key drift</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -20,33 +20,27 @@
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <header class="site-header">
-      <a class="wordmark" href="/" aria-label="Secret Sync Preflight home"><span class="mark" aria-hidden="true"></span><span>SSP<span class="wordmark-muted">/flight</span></span></a>
-      <nav aria-label="Primary navigation">
-        <a href="#how">How it works</a>
-        <a href="/demo/">Demo</a>
-        <a href="/privacy/">Privacy</a>
-        <a class="nav-install" href="#install">Install</a>
-      </nav>
-    </header>
+    <div data-site-header></div>
 
-    <main id="main">
+    <main id="main" tabindex="-1">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
           <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Key names only</p>
           <h1 id="hero-title">Check secret key drift <span>before deployment.</span></h1>
           <p class="lede">For DevOps teams syncing configuration across CI and hosting services.</p>
           <div class="hero-actions">
-            <a class="button primary" href="/?demo=1">Try it with sample data</a>
-            <span class="action-note">Opens a seeded drift report in this browser.</span>
+            <a class="button primary" href="/demo/">Try it with sample data</a>
+            <span class="action-note">Opens a sample drift report in this browser.</span>
             <a class="button secondary" href="#install">Install the CLI</a>
           </div>
-          <ul class="trust-list" aria-label="Product guarantees">
-            <li>Rejects secret values</li><li>Finds key drift</li><li>Uses clear CI exit codes</li>
+          <ul class="trust-list" aria-label="Product facts">
+            <li>No provider login</li>
+            <li>Demo works offline after the first visit</li>
+            <li>Free under the MIT License</li>
           </ul>
         </div>
         <figure class="hero-visual">
-          <img src="/parity-lattice.webp" width="1200" height="800" fetchpriority="high" alt="Four dark geometric configuration layers with aligned key-shaped cells, one missing cell, one displaced coral cell, and an amber capacity boundary." />
+          <img src="/parity-lattice.webp" width="1200" height="800" fetchpriority="high" alt="Four dark configuration layers show one missing key, one extra key, and an amber destination limit." />
           <figcaption><span aria-hidden="true">01</span> Four configuration layers. One expected key list.</figcaption>
         </figure>
       </section>
@@ -55,49 +49,89 @@
         <span>Missing keys</span><span>Extra keys</span><span>Likely renames</span><span>Destination limits</span><span>Delete policy</span>
       </section>
 
+      <section class="recording section" aria-labelledby="recording-title">
+        <div class="section-intro">
+          <p class="eyebrow">Real CLI sample</p>
+          <h2 id="recording-title">Watch the CLI find unsafe drift.</h2>
+          <p>Recorded from <code>sspf demo</code>. The command exits with code 1 because the sample contains drift.</p>
+        </div>
+        <figure class="recording-frame">
+          <img src="/cli-demo.svg" width="1200" height="760" loading="lazy" alt="Terminal recording of sspf demo finding missing, extra, renamed, and over-limit keys." />
+          <figcaption>The sample files are written to a new <code>/tmp/sspf-demo-*</code> folder.</figcaption>
+        </figure>
+        <details class="recording-transcript">
+          <summary>Read the CLI transcript</summary>
+          <pre id="cli-recording-output">Demo files: /tmp/sspf-demo-&lt;id&gt;
+Sample data contains key names only. No provider login or network is used.
+ENV   staging (3 expected keys)
+  PASS  ci — 3 destination keys / 3 expected keys
+    LIMIT   OK: expected 3, destination 3, maximum 10
+ENV   production (3 expected keys)
+  BLOCK hosting — 4 destination keys / 3 expected keys
+    RENAME? SESION_KEY -&gt; SESSION_KEY
+    MISSING SESSION_KEY
+    EXTRA   OLD_WEBHOOK_TOKEN
+    EXTRA   SESION_KEY
+    LIMIT   OVER: expected 3, destination 4, maximum 3
+    WHY     1 expected key is missing
+    WHY     destination key limit exceeded
+    WHY     2 extra keys require deletion review
+FAIL  2 destinations, 1 missing, 2 extra, 1 likely rename, 1 over limit</pre>
+        </details>
+      </section>
+
       <section class="how section" id="how" aria-labelledby="how-title">
         <div class="section-intro">
           <p class="eyebrow">Key-name checks</p>
           <h2 id="how-title">Compare expected and destination keys.</h2>
-          <p>Your repository lists expected keys. Each destination export lists keys that exist. The CLI compares key names and makes no changes.</p>
+          <p>Your repository lists expected keys. Each destination export lists keys that exist. The CLI compares those names without changing the files.</p>
         </div>
         <ol class="steps">
           <li><span class="step-num">01</span><div><h3>List expected keys</h3><p>List each environment’s expected keys in a TOML file.</p></div></li>
           <li><span class="step-num">02</span><div><h3>Export destination keys</h3><p>Export one key name per line with a read-only provider command.</p></div></li>
-          <li><span class="step-num">03</span><div><h3>Block unsafe deployment</h3><p>Read a terminal, JSON, or GitHub report. Unsafe results exit with an error.</p></div></li>
+          <li><span class="step-num">03</span><div><h3>Block unsafe deployment</h3><p>Read a terminal, JSON, or GitHub report. Unsafe results use exit code 1.</p></div></li>
         </ol>
       </section>
 
       <section class="demo-section section" id="demo" aria-labelledby="demo-title">
         <div class="section-intro demo-intro">
-          <p class="eyebrow">Sample check</p>
-          <h2 id="demo-title">See a sample drift report.</h2>
-          <p>Open the isolated sample to edit key names and reset it at any time.</p>
+          <p class="eyebrow">Browser sample</p>
+          <h2 id="demo-title">Edit a sample drift report.</h2>
+          <p>The sample is separate from your data. Reset restores its expected and destination keys.</p>
         </div>
-        <a class="button primary demo-link" href="/?demo=1">Try it with sample data</a>
+        <a class="button primary demo-link" href="/demo/">Try it with sample data</a>
+      </section>
+
+      <section class="scope section" id="scope" aria-labelledby="scope-title">
+        <div class="section-intro">
+          <p class="eyebrow">Privacy and scope</p>
+          <h2 id="scope-title">Know what the CLI does not do.</h2>
+          <p>It reads the local manifest and exports you provide. It never connects to a provider or changes provider data.</p>
+        </div>
+        <ul class="scope-list">
+          <li><strong>No secret values</strong><span>Lines containing values are rejected without printing the value.</span></li>
+          <li><strong>No automatic changes</strong><span>The CLI reports drift but never updates or deletes a provider secret.</span></li>
+          <li><strong>Local reports</strong><span>A report file is created only when you use <code>--report</code>.</span></li>
+        </ul>
       </section>
 
       <section class="install section" id="install" aria-labelledby="install-title">
         <div class="section-intro">
           <p class="eyebrow">Add the check to CI</p>
-          <h2 id="install-title">Runs locally as one CLI.</h2>
-          <p>Build from source today. Prebuilt downloads are not available yet.</p>
+          <h2 id="install-title">Install the CLI with Cargo.</h2>
+          <p>Run the sample first. Then point the check at your manifest.</p>
         </div>
         <div class="terminal" aria-label="Installation commands">
           <div class="terminal-bar"><span aria-hidden="true">● ● ●</span><span>shell</span></div>
           <pre tabindex="0" aria-label="Installation and check commands"><code><span class="prompt">$</span> cargo install --git https://github.com/B-Divyesh/sf-secret-sync-preflight
-<span class="prompt">$</span> sspf check --manifest preflight.toml --format github
-<span class="error-line">FAIL</span>  2 destinations, 1 missing, 2 extra, 1 likely renamed</code></pre>
+<span class="prompt">$</span> sspf demo
+<span class="error-line">FAIL</span>  2 destinations, 1 missing, 2 extra, 1 likely rename</code></pre>
           <button type="button" class="copy-button" id="copy-command" data-copy="cargo install --git https://github.com/B-Divyesh/sf-secret-sync-preflight" aria-describedby="copy-status">Copy install command</button>
           <span class="sr-only" id="copy-status" aria-live="polite"></span>
         </div>
       </section>
     </main>
 
-    <footer>
-      <a class="wordmark" href="/" aria-label="Secret Sync Preflight home"><span class="mark" aria-hidden="true"></span><span>SSP<span class="wordmark-muted">/flight</span></span></a>
-      <p>Key names can be sensitive. Store reports on your CI runner. Built by Param Factory · v0.1.0</p>
-      <nav aria-label="Legal"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-secret-sync-preflight">Source <span class="sr-only">(opens GitHub)</span></a></nav>
-    </footer>
+    <div data-site-footer></div>
   </body>
 </html>

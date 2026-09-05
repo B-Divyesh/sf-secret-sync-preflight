@@ -60,8 +60,41 @@ fn github_mode_emits_annotations_and_blocks() {
             "::warning title=Likely renamed key::",
         ))
         .stdout(predicate::str::contains(
-            "::error title=Provider limit exceeded::",
+            "::error title=Destination limit exceeded::",
         ));
+}
+
+#[test]
+fn help_and_terminal_output_use_expected_and_destination_terms() {
+    Command::cargo_bin("sspf")
+        .unwrap()
+        .args(["check", "--help"])
+        .assert()
+        .success()
+        .stdout(predicate::str::contains("expected key manifest"))
+        .stdout(predicate::str::contains("desired key manifest").not());
+    Command::cargo_bin("sspf")
+        .unwrap()
+        .args(["check", "--manifest", "examples/preflight.toml"])
+        .assert()
+        .code(1)
+        .stdout(predicate::str::contains("destination keys"))
+        .stdout(predicate::str::contains("expected keys"))
+        .stdout(predicate::str::contains(" current ").not())
+        .stdout(predicate::str::contains(" desired").not());
+}
+
+#[test]
+fn json_flag_prints_a_scriptable_report() {
+    let output = Command::cargo_bin("sspf")
+        .unwrap()
+        .args(["check", "--manifest", "examples/preflight.toml", "--json"])
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(1));
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(report["schema_version"], 1);
+    assert_eq!(report["summary"]["missing"], 1);
 }
 
 #[test]

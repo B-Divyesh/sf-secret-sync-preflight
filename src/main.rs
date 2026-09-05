@@ -6,8 +6,8 @@ use std::path::PathBuf;
 #[command(
     name = "sspf",
     version,
-    about = "Check secret key parity before deployment",
-    long_about = "Read-only preflight for secret key names across CI and hosting destinations. Values are rejected, never printed, and never stored."
+    about = "Check secret key drift before deployment",
+    long_about = "Compare expected secret key names with destination key exports. Values are rejected and never printed."
 )]
 struct Cli {
     #[command(subcommand)]
@@ -16,7 +16,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
-    /// Compare a desired key manifest with destination key exports
+    /// Compare an expected key manifest with destination key exports
     Check {
         /// Path to the version 1 TOML manifest
         #[arg(short, long, default_value = "preflight.toml")]
@@ -24,6 +24,9 @@ enum Command {
         /// Output format written to stdout
         #[arg(long, value_enum, default_value = "terminal")]
         format: OutputFormat,
+        /// Print the JSON report to stdout
+        #[arg(long, conflicts_with = "format")]
+        json: bool,
         /// Also write the full JSON report to this local path
         #[arg(long)]
         report: Option<PathBuf>,
@@ -58,9 +61,11 @@ fn execute(cli: Cli) -> Result<i32, String> {
         Command::Check {
             manifest,
             format,
+            json,
             report,
             strict_extra,
         } => {
+            let format = if json { OutputFormat::Json } else { format };
             let manifest_data = load_manifest(&manifest).map_err(|e| e.to_string())?;
             if let Some(report_path) = &report {
                 let mut inputs = vec![manifest.clone()];
@@ -124,16 +129,26 @@ fn run_demo() -> Result<i32, String> {
     let manifest = directory.join("preflight.toml");
     std::fs::write(&manifest, include_str!("../examples/preflight.toml"))
         .map_err(|e| format!("cannot write demo manifest: {e}"))?;
-    std::fs::write(directory.join("staging-ci.keys"), include_str!("../examples/staging-ci.keys"))
-        .map_err(|e| format!("cannot write demo export: {e}"))?;
-    std::fs::write(directory.join("production-hosting.keys"), include_str!("../examples/production-hosting.keys"))
-        .map_err(|e| format!("cannot write demo export: {e}"))?;
+    std::fs::write(
+        directory.join("staging-ci.keys"),
+        include_str!("../examples/staging-ci.keys"),
+    )
+    .map_err(|e| format!("cannot write demo export: {e}"))?;
+    std::fs::write(
+        directory.join("production-hosting.keys"),
+        include_str!("../examples/production-hosting.keys"),
+    )
+    .map_err(|e| format!("cannot write demo export: {e}"))?;
     let manifest_data = load_manifest(&manifest).map_err(|e| e.to_string())?;
     let report = run(&manifest_data, &manifest, false).map_err(|e| e.to_string())?;
     println!("Demo files: {}", directory.display());
     println!("Sample data contains key names only. No provider login or network is used.");
     print_terminal(&report);
-    Ok(if report.status == ReportStatus::Pass { 0 } else { 1 })
+    Ok(if report.status == ReportStatus::Pass {
+        0
+    } else {
+        1
+    })
 }
 
 fn same_existing_file(left: &std::path::Path, right: &std::path::Path) -> bool {
@@ -150,7 +165,7 @@ fn print_terminal(report: &Report) {
     }
     for environment in &report.environments {
         println!(
-            "ENV   {} ({} desired)",
+            "ENV   {} ({} expected keys)",
             environment.name, environment.desired_count
         );
         if environment.destinations.is_empty() {
@@ -163,7 +178,7 @@ fn print_terminal(report: &Report) {
                 "PASS "
             };
             println!(
-                "  {state} {} — {} current / {} desired",
+                "  {state} {} — {} destination keys / {} expected keys",
                 destination.name, destination.current_count, destination.desired_count
             );
             for rename in &destination.likely_renamed {
@@ -184,7 +199,7 @@ fn print_terminal(report: &Report) {
                     "OK"
                 };
                 println!(
-                    "    LIMIT   {state}: desired {}, current {}, maximum {}",
+                    "    LIMIT   {state}: expected {}, destination {}, maximum {}",
                     capacity.desired, capacity.current, capacity.limit
                 );
             }
@@ -194,16 +209,26 @@ fn print_terminal(report: &Report) {
         }
     }
     println!(
-        "{}  {} destination(s), {} missing, {} extra, {} likely renamed, {} over limit",
+        "{}  {} {}, {} missing, {} extra, {} likely {}, {} over limit",
         if report.status == ReportStatus::Pass {
             "PASS"
         } else {
             "FAIL"
         },
         report.summary.destinations,
+        if report.summary.destinations == 1 {
+            "destination"
+        } else {
+            "destinations"
+        },
         report.summary.missing,
         report.summary.extra,
         report.summary.renamed,
+        if report.summary.renamed == 1 {
+            "rename"
+        } else {
+            "renames"
+        },
         report.summary.over_limit
     );
 }
@@ -248,7 +273,7 @@ fn print_github(report: &Report) {
             }
             if let Some(capacity) = &destination.capacity {
                 if capacity.over_limit {
-                    println!("::error title=Provider limit exceeded::{} / {}: desired {}%2C current {}%2C maximum {}", escape(&environment.name), escape(&destination.name), capacity.desired, capacity.current, capacity.limit);
+                    println!("::error title=Destination limit exceeded::{} / {}: expected {}%2C destination {}%2C maximum {}", escape(&environment.name), escape(&destination.name), capacity.desired, capacity.current, capacity.limit);
                 }
             }
         }
