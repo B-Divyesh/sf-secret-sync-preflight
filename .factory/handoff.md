@@ -1,4 +1,23 @@
-# Secret Sync Preflight — repair handoff
+# Secret Sync Preflight — final handoff
+
+## Independent QA round 2
+
+**PASS — 0 findings and 0 untested claims.** Independent verification on
+5 September 2026 covered implementation candidate
+`09dffe769eaa3a882de07a207346de1a2569258f`, documentation SHA
+`d614005779ded6560ccd11ba32764da4d894d505`, and the live deployment.
+
+All 14 exact claim commands, `npm test`, `npm run build`, formatting, Clippy,
+Rust 1.85 compatibility, packaging, the documented Git install, and an
+isolated installed-consumer exercise passed. Fresh desktop and phone checks
+covered the first screen, populated sample, persistent label, reset, real-data
+isolation, normal and error states, keyboard and focus, reduced motion, Axe,
+200% text, offline recovery, privacy, all links, legal pages, and the designed
+HTTP 404. Live mobile Lighthouse scored 100 in every category with CLS 0.
+
+The complete independent report is `.factory/verification-2.md`. Evidence is
+under `/work/.evidence/verification-2/`. No product code changed. Optional
+registry publication remains the only factory-owned next step.
 
 ## Result
 
