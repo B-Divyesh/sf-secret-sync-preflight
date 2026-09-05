@@ -222,7 +222,8 @@ test("keyboard order, focus treatment, touch targets, motion, and route accessib
   const browserErrors: string[] = [];
   page.on("pageerror", (error) => browserErrors.push(String(error)));
   page.on("console", (message) => {
-    if (message.type() === "error") browserErrors.push(message.text());
+    const expectedMissingRoute = message.text() === "Failed to load resource: the server responded with a status of 404 (Not Found)";
+    if (message.type() === "error" && !expectedMissingRoute) browserErrors.push(message.text());
   });
   await page.emulateMedia({ reducedMotion: "reduce" });
   for (const path of ["/", "/demo/", "/privacy/", "/terms/", "/missing-page"]) {
